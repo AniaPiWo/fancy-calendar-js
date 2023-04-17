@@ -6,7 +6,7 @@ import { eachDayOfInterval, endOfMonth, endOfWeek, format, startOfMonth, startOf
 
 export const Calendar = () => {
   let today = startOfToday()
-  let [selectedDay, setSelectedDay] = useState(today);
+  //let [selectedDay, setSelectedDay] = useState(today);
   let [currentMonth, setCurrentMonth] = useState(format(today, 'MMM yyyy'))
   let firstDayCurrentMonth = parse(currentMonth, 'MMM yyyy', new Date())
   let firstDayNextMonth = add(firstDayCurrentMonth, { months: 1 })
