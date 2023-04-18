@@ -1,20 +1,28 @@
 import React from "react";
 import { useState } from "react";
-import { eachDayOfInterval, endOfMonth, endOfWeek, format, startOfMonth, startOfToday, parse, add, sub } from "date-fns";
+import { eachDayOfInterval, endOfMonth, endOfWeek, format, startOfMonth, startOfWeek, startOfToday, parse, add, sub, addDays } from "date-fns";
 import css from "./Calendar.module.css"
 
 export const Calendar = () => {
   let today = startOfToday()
   let [selectedDay, setSelectedDay] = useState(today);
+  let [selectedDays, setSelectedDays] = useState([]);
   let [currentMonth, setCurrentMonth] = useState(format(today, 'MMM yyyy'))
   let firstDayCurrentMonth = parse(currentMonth, 'MMM yyyy', new Date())
   let firstDayNextMonth = add(firstDayCurrentMonth, { months: 1 })
   let firstDayPrevMonth = sub(firstDayCurrentMonth, { months: 1 })
+  const start = startOfWeek(startOfMonth(firstDayCurrentMonth))
+  const end = endOfMonth(firstDayCurrentMonth)
+  const newStart = addDays(start, 1)
+  
 
-  let month = eachDayOfInterval({ 
-    start: firstDayCurrentMonth,
-    end:endOfWeek(endOfMonth(firstDayCurrentMonth))})
-
+  //let month = eachDayOfInterval({ start, end})
+  //let month = eachDayOfInterval({ start: newStart, end })
+  let month = eachDayOfInterval({ start: newStart, end }).map(day => {
+    const isSelected = selectedDays.some(selectedDay => format(selectedDay, 'yyyy-MM-dd') === format(day, 'yyyy-MM-dd'));
+    return { day, isSelected };
+  });
+  
   
   function nextMonth() {
     let firstDayNextMonth = add(firstDayCurrentMonth, { months: 1 })
@@ -25,7 +33,17 @@ export const Calendar = () => {
     let firstDayPrevMonth = sub(firstDayCurrentMonth, { months: 1 })
     setCurrentMonth(format(firstDayPrevMonth, 'MMM yyyy'))
   }
-
+  
+  function handleDayClick(day) {
+    const index = selectedDays.findIndex(selectedDay => format(selectedDay, 'yyyy-MM-dd') === format(day, 'yyyy-MM-dd'));
+  
+    if (index === -1) {
+      setSelectedDays([...selectedDays, day]);
+    } else {
+      setSelectedDays(selectedDays.filter(selectedDay => format(selectedDay, 'yyyy-MM-dd') !== format(day, 'yyyy-MM-dd')));
+    }
+  }
+  
 
   return (
     <div className={css.calendar}>
@@ -44,15 +62,19 @@ export const Calendar = () => {
         <p>Sun</p>
       </div>
       <div className={css.days}>
-        {month.map((day) => (
-          <p className={css.day} key={day.toString()}>
-            <time dateTime={format(day, 'yyyy-MM-dd')}>{format(day, 'd')}</time>
-          </p>
-        ))}
+      {month.map(({ day, isSelected }) => (
+      <p
+        className={`${css.day} ${isSelected ? css.selectedDay : ''}`}
+        key={day.toString()}
+        onClick={() => handleDayClick(day)}
+      >
+    <time dateTime={format(day, 'yyyy-MM-dd')}>{format(day, 'd')}</time>
+  </p>
+))}
+
       </div>
     </div>
   );
 };
-
 
 
