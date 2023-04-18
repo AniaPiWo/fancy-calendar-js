@@ -1,0 +1,62 @@
+.calendar {
+    border: 1px solid red;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    padding: 50px;
+}
+
+
+.nav {
+    background-color: white;
+    display: flex;
+    justify-content: space-between;   
+    padding-bottom: 18px;
+    padding-top: 15px;
+}
+.nav button {
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 11px;
+}
+
+.nav h2 {
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 23px;
+}
+
+.daysName {
+    background-color: white;
+    display: flex;
+    justify-content: space-around;
+    padding-bottom: 12px;
+    padding-top: 15px;
+}
+
+.days {
+    background-color: white;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-gap: 0;
+    border-collapse: collapse;
+}
+
+
+.day {
+    width: 70px;
+    height: 70px;
+    background: #FCFDFC;
+    border: 1px solid #DCDFDC;
+    position: relative;
+  }
+  
+  .days time {
+    position: absolute;
+    left: 14px;
+    top: 14px;
+  }
+  
+  

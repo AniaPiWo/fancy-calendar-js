@@ -1,8 +1,7 @@
 import React from "react";
 import { useState } from "react";
-import "bootstrap/dist/css/bootstrap.min.css"
-import { Container, Row, Col } from 'react-bootstrap';
 import { eachDayOfInterval, endOfMonth, endOfWeek, format, startOfMonth, startOfToday, parse, add, sub } from "date-fns";
+import css from "./Calendar.module.css"
 
 export const Calendar = () => {
   let today = startOfToday()
@@ -29,31 +28,31 @@ export const Calendar = () => {
 
 
   return (
-    <Container>
-      <Row className="border border-secondary p-3">
-        <Col><button  onClick={previousMonth}>{format(firstDayPrevMonth, 'MMMMMM')}</button></Col>
-        <Col>{format(firstDayCurrentMonth, 'MMMMMMM yyy')}</Col>
-        <Col><button
-          onClick={nextMonth}>{format(firstDayNextMonth, 'MMMMMM')}</button></Col>
-      </Row>
-      <Row className="border border-secondary p-3">
-        <Col>Mon</Col>
-        <Col>Tue</Col>
-        <Col>Wed</Col>
-        <Col>Thu</Col>
-        <Col>Fri</Col>
-        <Col>Sat</Col>
-        <Col>Sun</Col>
-      </Row>
-      <Row>
+    <div className={css.calendar}>
+      <div className={css.nav}>
+        <button  onClick={previousMonth}><p>&larr;</p>{format(firstDayPrevMonth, 'MMMMMM')}</button>
+        <h2>{format(firstDayCurrentMonth, 'MMMMMMM yyy')}</h2>
+        <button onClick={nextMonth}>{format(firstDayNextMonth, 'MMMMMM')}<p>&#8594;</p></button>
+      </div>
+      <div className={css.daysName}>
+        <p>Mon</p>
+        <p>Tue</p>
+        <p>Wed</p>
+        <p>Thu</p>
+        <p>Fri</p>
+        <p>Sat</p>
+        <p>Sun</p>
+      </div>
+      <div className={css.days}>
         {month.map((day) => (
-          <Col key={day.toString()}>
+          <p className={css.day} key={day.toString()}>
             <time dateTime={format(day, 'yyyy-MM-dd')}>{format(day, 'd')}</time>
-          </Col>
+          </p>
         ))}
-      </Row>
-    </Container>
+      </div>
+    </div>
   );
 };
+
 
 
