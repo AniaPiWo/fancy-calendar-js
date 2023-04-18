@@ -56,11 +56,20 @@
     border: 1px solid #DCDFDC;
     position: relative;
   }
+
+  .day:hover {
+    background-color: #141E12;
+    color: #FCFDFC;
+  }
   
   .days time {
     position: absolute;
     left: 14px;
     top: 14px;
   }
-  
+
+  .selectedDay {
+    background-color: #141E12;
+    color: #FCFDFC;
+  }
   
