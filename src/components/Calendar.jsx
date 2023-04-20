@@ -12,8 +12,8 @@ const defaultDateFormat = "yyyy-MM-dd"
 const firstDayCurrentMonth = parse(currentMonth, 'MMM yyyy', new Date()); //prawidlowo - pierwszy dzien miesiaca
 const firstDayNextMonth = add(firstDayCurrentMonth, { months: 1 });
 const firstDayPrevMonth = sub(firstDayCurrentMonth, { months: 1 });
-const start = firstDayCurrentMonth // od prawidlowego dnia msca, ale nieprawidlowy dzien tygodnia
-//const start = startOfWeek(firstDayCurrentMonth); //od poniedzialku poprzedzajacego 1 dzien aktualnego msc
+//const start = firstDayCurrentMonth // od prawidlowego dnia msca, ale nieprawidlowy dzien tygodnia
+const start = startOfWeek(firstDayCurrentMonth); //od poniedzialku poprzedzajacego 1 dzien aktualnego msc
 const end = endOfMonth(firstDayCurrentMonth);
 
 
