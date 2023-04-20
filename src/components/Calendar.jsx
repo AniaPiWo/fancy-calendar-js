@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { eachDayOfInterval, endOfMonth, format, startOfMonth, startOfWeek, startOfToday, parse, add, sub, addDays, isBefore } from "date-fns";
+import { eachDayOfInterval, endOfMonth, format, startOfMonth, startOfWeek, startOfToday, parse, add, sub, addDays,addSeconds, isBefore } from "date-fns";
 import css from "./Calendar.module.css"
 
 export const Calendar = () => {
@@ -7,17 +7,17 @@ const [dateFrom, setDateFrom] = useState(null);
 const [dateTo, setDateTo] = useState(null);
 const [selectedDates, setSelectedDates] = useState([]);
 const [currentMonth, setCurrentMonth] = useState(format(startOfToday(), 'MMM yyyy'));
+const defaultDateFormat = "yyyy-MM-dd"
 
 const firstDayCurrentMonth = parse(currentMonth, 'MMM yyyy', new Date());
 const firstDayNextMonth = add(firstDayCurrentMonth, { months: 1 });
 const firstDayPrevMonth = sub(firstDayCurrentMonth, { months: 1 });
-const start = startOfWeek(startOfMonth(firstDayCurrentMonth));
+const start = startOfWeek(firstDayCurrentMonth);
 const end = endOfMonth(firstDayCurrentMonth);
 const newStart = addDays(start, 1);
 
-
 const month = eachDayOfInterval({ start: newStart, end }).map(day => {
-const isSelected = selectedDates.some(selectedDay => format(selectedDay, 'yyyy-MM-dd') === format(day, 'yyyy-MM-dd'));
+const isSelected = selectedDates.some(selectedDay => format(selectedDay, defaultDateFormat) === format(day, defaultDateFormat));
 return { day, isSelected };
 });
 
@@ -32,11 +32,11 @@ setCurrentMonth(format(firstDayPrevMonth, 'MMM yyyy'))
 }
 
 function handleDayClick(day) {
-  if (!dateFrom || (dateTo && (format(dateTo, 'yyyy-MM-dd') !== format(day, 'yyyy-MM-dd')))) {
+  if (!dateFrom || (dateTo && (format(dateTo, defaultDateFormat) !== format(day, defaultDateFormat)))) {
     setDateFrom(day);
     setDateTo(null);
     setSelectedDates([day]);
-  } else if (!dateTo && (format(dateFrom, 'yyyy-MM-dd') !== format(day, 'yyyy-MM-dd'))) {
+  } else if (!dateTo && (format(dateFrom, defaultDateFormat) !== format(day, defaultDateFormat))) {
     if (isBefore(day, dateFrom)) {
       setDateTo(dateFrom);
       setDateFrom(day);
@@ -104,13 +104,12 @@ console.log(`Selected length: ${selectedDates.length}`);
         key={day.toString()}
         onClick={() => handleDayClick(day)}
       >
-    <time dateTime={format(day, 'yyyy-MM-dd')}>{format(day, 'd')}</time>
-  </p>
-))}
-
+        <time dateTime={format(day, defaultDateFormat)}>{format(day, 'd')}</time>
+      </p>
+      ))}
       </div>
     </div>
-    </div>
+  </div>
   );
 };
 
