@@ -9,17 +9,23 @@ const [selectedDates, setSelectedDates] = useState([]);
 const [currentMonth, setCurrentMonth] = useState(format(startOfToday(), 'MMM yyyy'));
 const defaultDateFormat = "yyyy-MM-dd"
 
-const firstDayCurrentMonth = parse(currentMonth, 'MMM yyyy', new Date());
+const firstDayCurrentMonth = parse(currentMonth, 'MMM yyyy', new Date()); //prawidlowo - pierwszy dzien miesiaca
 const firstDayNextMonth = add(firstDayCurrentMonth, { months: 1 });
 const firstDayPrevMonth = sub(firstDayCurrentMonth, { months: 1 });
-const start = startOfWeek(firstDayCurrentMonth);
+const start = firstDayCurrentMonth // od prawidlowego dnia msca, ale nieprawidlowy dzien tygodnia
+//const start = startOfWeek(firstDayCurrentMonth); //od poniedzialku poprzedzajacego 1 dzien aktualnego msc
 const end = endOfMonth(firstDayCurrentMonth);
-const newStart = addDays(start, 1);
 
-const month = eachDayOfInterval({ start: newStart, end }).map(day => {
+
+const month = eachDayOfInterval({ start, end }).map(day => {
+//console.log(`DAY => ${day}`);
 const isSelected = selectedDates.some(selectedDay => format(selectedDay, defaultDateFormat) === format(day, defaultDateFormat));
 return { day, isSelected };
 });
+
+console.log(`firstDayCurrentMonth => ${firstDayCurrentMonth}`);
+console.log(`START => ${start}`);
+console.log(`END => ${end}`);
 
 function nextMonth() {
 const firstDayNextMonth = add(firstDayCurrentMonth, { months: 1 });
@@ -52,7 +58,6 @@ function handleDayClick(day) {
   }
 } 
 
-
 useEffect(() => {
   if (dateFrom && dateTo) {
     const interval = eachDayOfInterval({ start: dateFrom, end: dateTo });
@@ -61,7 +66,6 @@ useEffect(() => {
     setSelectedDates(dateFrom ? [dateFrom] : []);
   }
 }, [dateFrom, dateTo]);
-
 
 const formattedDateFrom = dateFrom ? format(dateFrom, 'MMMM dd') : null;
 const formattedDateTo = dateTo ? format(dateTo, 'MMMM dd') : null;
