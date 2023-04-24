@@ -111,13 +111,13 @@ const formattedDateTo = dateTo ? format(dateTo, 'MMMM dd') : null;
           <button onClick={nextMonth}>{format(firstDayNextMonth, 'MMMMMM')}<p>&#8594;</p></button>
         </div>
         <div className={css.daysName}>
+        <p>Sun</p>
         <p>Mon</p>
         <p>Tue</p>
         <p>Wed</p>
         <p>Thu</p>
         <p>Fri</p>
         <p>Sat</p>
-        <p>Sun</p>
       </div>
       <div className={css.days} ref={calendarRef}>
     {month.map(({ day, isSelected }) => {
