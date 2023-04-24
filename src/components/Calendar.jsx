@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { eachDayOfInterval, endOfMonth, format, startOfMonth, startOfWeek, startOfToday, parse, add, sub, addDays,addSeconds, isBefore } from "date-fns";
+import { eachDayOfInterval, endOfMonth, format, startOfMonth, startOfWeek, startOfToday, parse, add, sub, addDays, addSeconds, isBefore } from "date-fns";
+
 import css from "./Calendar.module.css"
 
 export const Calendar = () => {
@@ -12,30 +13,46 @@ const defaultDateFormat = "yyyy-MM-dd"
 const firstDayCurrentMonth = parse(currentMonth, 'MMM yyyy', new Date()); //prawidlowo - pierwszy dzien miesiaca
 const firstDayNextMonth = add(firstDayCurrentMonth, { months: 1 });
 const firstDayPrevMonth = sub(firstDayCurrentMonth, { months: 1 });
-//const start = firstDayCurrentMonth // od prawidlowego dnia msca, ale nieprawidlowy dzien tygodnia
-const start = startOfWeek(firstDayCurrentMonth); //od poniedzialku poprzedzajacego 1 dzien aktualnego msc
-const end = endOfMonth(firstDayCurrentMonth);
-
-
-const month = eachDayOfInterval({ start, end }).map(day => {
-//console.log(`DAY => ${day}`);
-const isSelected = selectedDates.some(selectedDay => format(selectedDay, defaultDateFormat) === format(day, defaultDateFormat));
-return { day, isSelected };
-});
-
-console.log(`firstDayCurrentMonth => ${firstDayCurrentMonth}`);
-console.log(`START => ${start}`);
-console.log(`END => ${end}`);
 
 function nextMonth() {
-const firstDayNextMonth = add(firstDayCurrentMonth, { months: 1 });
-setCurrentMonth(format(firstDayNextMonth, 'MMM yyyy'))
+  const firstDayNextMonth = add(firstDayCurrentMonth, { months: 1 });
+  setCurrentMonth(format(firstDayNextMonth, 'MMM yyyy'))
+  }
+  
+  function previousMonth() {
+  const firstDayPrevMonth = sub(firstDayCurrentMonth, { months: 1 });
+  setCurrentMonth(format(firstDayPrevMonth, 'MMM yyyy'))
+  }
+
+console.log(`CURRENT MONTH => ${currentMonth}`);
+
+
+function getDaysInMonth(month) {
+  const start = startOfWeek(startOfMonth(month)); // Get start of month
+  const end = endOfMonth(month); // Get end of month
+  const daysInMonth = eachDayOfInterval({ start, end }); // Get array of dates in month
+  const currentMonth = format(startOfToday(), 'MMM yyyy'); // Get current month
+  const currentMonthIndex = new Date(currentMonth).getMonth(); // Extract month value from current month
+
+  for (const day in daysInMonth) {
+    const monthIndex = daysInMonth[day].getMonth(); // Extract month value from date
+    const monthName = daysInMonth[day].toLocaleString('default', { month: 'long' }); // Get month name from date
+    if (monthIndex !== currentMonthIndex) { // Compare month value with current month
+      console.log(`${monthName} ${daysInMonth[day].getDate()}, ${daysInMonth[day].getFullYear()}`);
+    }
+  }
+  console.log(daysInMonth);
+  return daysInMonth;
 }
 
-function previousMonth() {
-const firstDayPrevMonth = sub(firstDayCurrentMonth, { months: 1 });
-setCurrentMonth(format(firstDayPrevMonth, 'MMM yyyy'))
-}
+
+const month = getDaysInMonth(new Date()).map(day => {
+  //console.log(`DAY => ${day}`);
+  const isSelected = selectedDates.some(selectedDay => format(selectedDay, defaultDateFormat) === format(day, defaultDateFormat));
+return { day, isSelected };
+})
+//console.log(`MONTH => ${month}`);
+
 
 function handleDayClick(day) {
   if (!dateFrom || (dateTo && (format(dateTo, defaultDateFormat) !== format(day, defaultDateFormat)))) {
