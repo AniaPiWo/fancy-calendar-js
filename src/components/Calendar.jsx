@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef  } from "react";
 import { eachDayOfInterval, endOfMonth, format, startOfMonth, startOfWeek, startOfToday, parse, add, sub, addDays, addSeconds, isBefore } from "date-fns";
-
 import css from "./Calendar.module.css"
 
 export const Calendar = () => {
@@ -8,6 +7,7 @@ const [dateFrom, setDateFrom] = useState(null);
 const [dateTo, setDateTo] = useState(null);
 const [selectedDates, setSelectedDates] = useState([]);
 const [currentMonth, setCurrentMonth] = useState(format(startOfToday(), 'MMM yyyy'));
+const calendarRef = useRef(null);
 const defaultDateFormat = "yyyy-MM-dd"
 
 const firstDayCurrentMonth = parse(currentMonth, 'MMM yyyy', new Date()); //prawidlowo - pierwszy dzien miesiaca
@@ -24,35 +24,27 @@ function nextMonth() {
   setCurrentMonth(format(firstDayPrevMonth, 'MMM yyyy'))
   }
 
-console.log(`CURRENT MONTH => ${currentMonth}`);
 
+
+function notCurrentMonth(date) {
+  const currentMonth = format(startOfToday(), 'MMM yyyy');
+  const currentMonthIndex = new Date(currentMonth).getMonth();
+  const monthIndex = date.getMonth();
+  return monthIndex !== currentMonthIndex;
+}
 
 function getDaysInMonth(month) {
-  const start = startOfWeek(startOfMonth(month)); // Get start of month
-  const end = endOfMonth(month); // Get end of month
-  const daysInMonth = eachDayOfInterval({ start, end }); // Get array of dates in month
-  const currentMonth = format(startOfToday(), 'MMM yyyy'); // Get current month
-  const currentMonthIndex = new Date(currentMonth).getMonth(); // Extract month value from current month
-
-  for (const day in daysInMonth) {
-    const monthIndex = daysInMonth[day].getMonth(); // Extract month value from date
-    const monthName = daysInMonth[day].toLocaleString('default', { month: 'long' }); // Get month name from date
-    if (monthIndex !== currentMonthIndex) { // Compare month value with current month
-      console.log(`${monthName} ${daysInMonth[day].getDate()}, ${daysInMonth[day].getFullYear()}`);
-    }
-  }
-  console.log(daysInMonth);
+  const start = startOfWeek(startOfMonth(month));
+  const end = endOfMonth(month);
+  const daysInMonth = eachDayOfInterval({ start, end });
   return daysInMonth;
 }
 
-
 const month = getDaysInMonth(new Date()).map(day => {
-  //console.log(`DAY => ${day}`);
   const isSelected = selectedDates.some(selectedDay => format(selectedDay, defaultDateFormat) === format(day, defaultDateFormat));
 return { day, isSelected };
 })
-//console.log(`MONTH => ${month}`);
-
+console.log(selectedDates);
 
 function handleDayClick(day) {
   if (!dateFrom || (dateTo && (format(dateTo, defaultDateFormat) !== format(day, defaultDateFormat)))) {
@@ -84,12 +76,21 @@ useEffect(() => {
   }
 }, [dateFrom, dateTo]);
 
+useEffect(() => {
+  function handleClickOutside(event) {
+    if (calendarRef.current && !calendarRef.current.contains(event.target)) {
+      setSelectedDates([]);
+    }
+  }
+
+  document.addEventListener("click", handleClickOutside);
+  return () => {
+    document.removeEventListener("click", handleClickOutside);
+  };
+}, [calendarRef]);
+
 const formattedDateFrom = dateFrom ? format(dateFrom, 'MMMM dd') : null;
 const formattedDateTo = dateTo ? format(dateTo, 'MMMM dd') : null;
-console.log(`Start: ${formattedDateFrom}, End: ${formattedDateTo}`);
-console.log(`Selected dates: ${selectedDates}`);
-console.log(`Selected length: ${selectedDates.length}`);
-
 
   return (
     <div>
@@ -103,13 +104,13 @@ console.log(`Selected length: ${selectedDates.length}`);
           </p>
         )}
       </div>
-    <div className={css.calendar}>
-      <div className={css.nav}>
-        <button  onClick={previousMonth}><p>&larr;</p>{format(firstDayPrevMonth, 'MMMMMM')}</button>
-        <h2>{format(firstDayCurrentMonth, 'MMMMMMM yyy')}</h2>
-        <button onClick={nextMonth}>{format(firstDayNextMonth, 'MMMMMM')}<p>&#8594;</p></button>
-      </div>
-      <div className={css.daysName}>
+      <div className={css.calendar}>
+        <div className={css.nav}>
+          <button  onClick={previousMonth}><p>&larr;</p>{format(firstDayPrevMonth, 'MMMMMM')}</button>
+          <h2>{format(firstDayCurrentMonth, 'MMMMMMM yyy')}</h2>
+          <button onClick={nextMonth}>{format(firstDayNextMonth, 'MMMMMM')}<p>&#8594;</p></button>
+        </div>
+        <div className={css.daysName}>
         <p>Mon</p>
         <p>Tue</p>
         <p>Wed</p>
@@ -118,20 +119,23 @@ console.log(`Selected length: ${selectedDates.length}`);
         <p>Sat</p>
         <p>Sun</p>
       </div>
-      <div className={css.days}>
-      {month.map(({ day, isSelected }) => (
+      <div className={css.days} ref={calendarRef}>
+    {month.map(({ day, isSelected }) => {
+    const isCurrent = notCurrentMonth(day);
+    return (
       <p
-        className={`${css.day} ${isSelected ? css.selectedDay : ''}`}
+        className={`${css.day} ${isSelected ? css.selectedDay : ''} ${isCurrent ? css.notCurrentMonth : ''}`}
         key={day.toString()}
         onClick={() => handleDayClick(day)}
       >
         <time dateTime={format(day, defaultDateFormat)}>{format(day, 'd')}</time>
       </p>
-      ))}
-      </div>
+    );
+  })}
+</div>
+
     </div>
   </div>
   );
 };
-
 
