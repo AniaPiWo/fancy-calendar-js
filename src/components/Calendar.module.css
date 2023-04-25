@@ -67,11 +67,6 @@
   left: 14px;
   top: 14px;
 }
-  
-.selectedDay {
-  background-color: hotpink;
-  color: #FCFDFC;
-}
 
 .header {
   background: #F8FAF8;
@@ -107,7 +102,12 @@
 .notCurrentMonth {
   color: #141E12;
   opacity: 0.2;
-  background: #F8FAF8;
+  background-color: #F8FAF8;
+}
+
+.selectedDay {
+  background-color: hotpink;
+  color: #FCFDFC;
 }
 
 .today {
