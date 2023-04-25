@@ -1,10 +1,9 @@
 {
   "name": "fancy-calendar-js",
   "author": "Nerdbord",
-  "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://AniaPiWo.github.io/fancy-calendar-js",
+  "homepage": "https://aniapiwo.github.io/fancy-calendar-js/",
 
   "scripts": {
     "dev": "vite",
