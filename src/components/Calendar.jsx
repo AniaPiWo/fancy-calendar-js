@@ -24,8 +24,6 @@ function nextMonth() {
   setCurrentMonth(format(firstDayPrevMonth, 'MMM yyyy'))
   }
 
-
-
 function notCurrentMonth(date) {
   const currentMonth = format(startOfToday(), 'MMM yyyy');
   const currentMonthIndex = new Date(currentMonth).getMonth();
