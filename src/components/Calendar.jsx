@@ -3,30 +3,33 @@ import { eachDayOfInterval, endOfMonth, format, startOfMonth, startOfWeek, start
 import css from "./Calendar.module.css"
 
 export const Calendar = () => {
-const [formattedTime, setFormattedTime] = useState(format(new Date(), 'dd MMMM, HH:mm'));
+const [formattedTime, setFormattedTime] = useState(format(new Date(), 'MMMM dd, HH:mm'));
 const [dateFrom, setDateFrom] = useState(null);
 const [dateTo, setDateTo] = useState(null);
 const [selectedDates, setSelectedDates] = useState([]);
-const [currentMonth, setCurrentMonth] = useState(format(startOfToday(), 'MMM yyyy'));
+const [currentMonth, setCurrentMonth] = useState(startOfMonth(new Date()));
 const defaultDateFormat = "yyyy-MM-dd"
+const defaultDisplayDateFormat = "dd MMMM"
 const today = new Date();
 const calendarRef = useRef(null);
-const firstDayCurrentMonth = parse(currentMonth, 'MMM yyyy', new Date()); 
-const firstDayNextMonth = add(firstDayCurrentMonth, { months: 1 });
-const firstDayPrevMonth = sub(firstDayCurrentMonth, { months: 1 });
+const formattedDateFrom = dateFrom ? format(dateFrom, defaultDisplayDateFormat) : null;
+const formattedDateTo = dateTo ? format(dateTo, defaultDisplayDateFormat) : null;
+const previousMonth = sub(currentMonth, { months: 1 });
+const prevMonthFormatted = format(previousMonth, "MMMM")
+const nextMonth = add(currentMonth, { months: 1 });
+const nextMonthFormatted = format(nextMonth, "MMMM")
 
-function nextMonth() {
-  const firstDayNextMonth = add(firstDayCurrentMonth, { months: 1 });
-  setCurrentMonth(format(firstDayNextMonth, 'MMM yyyy'))
-  }
-  
-  function previousMonth() {
-  const firstDayPrevMonth = sub(firstDayCurrentMonth, { months: 1 });
-  setCurrentMonth(format(firstDayPrevMonth, 'MMM yyyy'))
-  }
+function handleNextMonth() {
+  setCurrentMonth(add(currentMonth, { months: 1 }));
+  console.log(format(currentMonth, "MMMM"));
+}
+
+function handlePreviousMonth() {
+  setCurrentMonth(sub(currentMonth, { months: 1 }));
+  console.log(currentMonth);
+}
 
 function notCurrentMonth(date) {
-  const currentMonth = format(startOfToday(), 'MMM yyyy');
   const currentMonthIndex = new Date(currentMonth).getMonth();
   const monthIndex = date.getMonth();
   return monthIndex !== currentMonthIndex;
@@ -39,12 +42,17 @@ function getDaysInMonth(month) {
   return daysInMonth;
 }
 
-const month = getDaysInMonth(new Date()).map(day => {
-  const isSelected = selectedDates.some(selectedDay => format(selectedDay, defaultDateFormat) === format(day, defaultDateFormat));
-return { day, isSelected };
-})
-
-
+const month = getDaysInMonth(currentMonth).map((day) => {
+  const isSelected = selectedDates.some(
+    (selectedDay) =>
+        format(selectedDay, defaultDateFormat) ===
+        format(day, defaultDateFormat)
+    );
+    const isCurrent = notCurrentMonth(day);
+    const isToday = format(today, defaultDateFormat) === format(day, defaultDateFormat);
+    return { day, isSelected, isCurrent, isToday };
+});
+  
 function handleDayClick(day) {
   if (!dateFrom || (dateTo && (format(dateTo, defaultDateFormat) !== format(day, defaultDateFormat)))) {
     setDateFrom(day);
@@ -76,30 +84,23 @@ useEffect(() => {
 }, [dateFrom, dateTo]);
 
 useEffect(() => {
-  function handleClickOutside(event) {
-    if (calendarRef.current && !calendarRef.current.contains(event.target)) {
+  function handleKeyDown(event) {
+    if (event.key === "Escape") {
       setSelectedDates([]);
     }
   }
-
-  document.addEventListener("click", handleClickOutside);
+  document.addEventListener("keydown", handleKeyDown);
   return () => {
-    document.removeEventListener("click", handleClickOutside);
+    document.removeEventListener("keydown", handleKeyDown);
   };
-}, [calendarRef]);
-
+}, [calendarRef, setSelectedDates]);
 
 useEffect(() => {
   const interval = setInterval(() => {
     setFormattedTime(format(new Date(), 'dd MMMM, HH:mm'));
-    console.log("💀")
   }, 60000); 
   return () => clearInterval(interval);
 }, []);
-
-
-const formattedDateFrom = dateFrom ? format(dateFrom, 'MMMM dd') : null;
-const formattedDateTo = dateTo ? format(dateTo, 'MMMM dd') : null;
 
   return (
     <div>
@@ -116,9 +117,10 @@ const formattedDateTo = dateTo ? format(dateTo, 'MMMM dd') : null;
       </div>
       <div className={css.calendar}>
         <div className={css.nav}>
-          <button  onClick={previousMonth}><p>&larr;</p>{format(firstDayPrevMonth, 'MMMMMM')}</button>
-          <h2>{format(firstDayCurrentMonth, 'MMMMMMM yyy')}</h2>
-          <button onClick={nextMonth}>{format(firstDayNextMonth, 'MMMMMM')}<p>&#8594;</p></button>
+          <button onClick={handlePreviousMonth}>
+            <p>&larr;</p>{prevMonthFormatted}</button>
+          <h2>{format(currentMonth, "MMMM")}</h2>
+          <button onClick={handleNextMonth}>{nextMonthFormatted}<p>&#8594;</p></button> 
         </div>
         <div className={css.daysName}>
         <p>Sun</p>
@@ -130,23 +132,22 @@ const formattedDateTo = dateTo ? format(dateTo, 'MMMM dd') : null;
         <p>Sat</p>
       </div>
       <div className={css.days} ref={calendarRef}>
-    {month.map(({ day, isSelected }) => {
-    const isCurrent = notCurrentMonth(day);
-    const isToday = format(today, defaultDateFormat) === format(day, defaultDateFormat);
-    return (
+      {month.map(({ day, isSelected, isCurrent, isToday })  => {
+      return (
       <p
-        className={`${css.day} ${isSelected ? css.selectedDay : ''} ${isCurrent ? css.notCurrentMonth : ''} ${isSelected ? '' : isToday ? css.today : ''}`}
-        key={day.toString()}
+        className={`${css.day} ${isSelected ? css.selectedDay : ''} ${isCurrent ? css.notCurrentMonth : ''} ${isToday && !isSelected ? css.today: ''}`}
+        key={day}
         onClick={() => handleDayClick(day)}
       >
       <time dateTime={format(day, defaultDateFormat)}>{format(day, 'd')}</time>
-    </p>
-    );
-  })}
-</div>
-
+      </p>
+      );
+    })} 
+    </div>
+      <div className={css.esc}>
+        <p>Press ESC to clear calendar</p>
+       </div> 
     </div>
   </div>
   );
 };
-

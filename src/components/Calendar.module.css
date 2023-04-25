@@ -28,7 +28,7 @@
 
 .nav h2 {
     font-weight: 500;
-    font-size: 18px;
+    font-size: 23px;
     line-height: 23px;
 }
 
@@ -124,4 +124,6 @@
   padding-top: 50px;
 }
 
-
+.esc {
+  padding-top: 30px;
+}
