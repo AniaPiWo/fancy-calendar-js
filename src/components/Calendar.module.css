@@ -109,3 +109,8 @@
   opacity: 0.2;
   background: #F8FAF8;
 }
+
+.today {
+  border-color: hotpink;
+  color: hotpink;
+}

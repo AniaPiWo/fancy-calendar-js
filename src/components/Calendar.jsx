@@ -7,10 +7,11 @@ const [dateFrom, setDateFrom] = useState(null);
 const [dateTo, setDateTo] = useState(null);
 const [selectedDates, setSelectedDates] = useState([]);
 const [currentMonth, setCurrentMonth] = useState(format(startOfToday(), 'MMM yyyy'));
-const calendarRef = useRef(null);
 const defaultDateFormat = "yyyy-MM-dd"
+const today = new Date();
+const calendarRef = useRef(null);
 
-const firstDayCurrentMonth = parse(currentMonth, 'MMM yyyy', new Date()); //prawidlowo - pierwszy dzien miesiaca
+const firstDayCurrentMonth = parse(currentMonth, 'MMM yyyy', new Date()); 
 const firstDayNextMonth = add(firstDayCurrentMonth, { months: 1 });
 const firstDayPrevMonth = sub(firstDayCurrentMonth, { months: 1 });
 
@@ -44,7 +45,6 @@ const month = getDaysInMonth(new Date()).map(day => {
   const isSelected = selectedDates.some(selectedDay => format(selectedDay, defaultDateFormat) === format(day, defaultDateFormat));
 return { day, isSelected };
 })
-console.log(selectedDates);
 
 function handleDayClick(day) {
   if (!dateFrom || (dateTo && (format(dateTo, defaultDateFormat) !== format(day, defaultDateFormat)))) {
@@ -122,14 +122,15 @@ const formattedDateTo = dateTo ? format(dateTo, 'MMMM dd') : null;
       <div className={css.days} ref={calendarRef}>
     {month.map(({ day, isSelected }) => {
     const isCurrent = notCurrentMonth(day);
+    const isToday = format(today, defaultDateFormat) === format(day, defaultDateFormat);
     return (
       <p
-        className={`${css.day} ${isSelected ? css.selectedDay : ''} ${isCurrent ? css.notCurrentMonth : ''}`}
+        className={`${css.day} ${isSelected ? css.selectedDay : ''} ${isCurrent ? css.notCurrentMonth : ''} ${isSelected ? '' : isToday ? css.today : ''}`}
         key={day.toString()}
         onClick={() => handleDayClick(day)}
       >
-        <time dateTime={format(day, defaultDateFormat)}>{format(day, 'd')}</time>
-      </p>
+      <time dateTime={format(day, defaultDateFormat)}>{format(day, 'd')}</time>
+    </p>
     );
   })}
 </div>
