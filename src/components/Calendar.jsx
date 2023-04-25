@@ -11,9 +11,6 @@ const [currentMonth, setCurrentMonth] = useState(format(startOfToday(), 'MMM yyy
 const defaultDateFormat = "yyyy-MM-dd"
 const today = new Date();
 const calendarRef = useRef(null);
-const currentTime = new Date();
-//const formattedTime = format(currentTime, 'dd MMMM, HH:mm');
-
 const firstDayCurrentMonth = parse(currentMonth, 'MMM yyyy', new Date()); 
 const firstDayNextMonth = add(firstDayCurrentMonth, { months: 1 });
 const firstDayPrevMonth = sub(firstDayCurrentMonth, { months: 1 });
@@ -96,7 +93,7 @@ useEffect(() => {
   const interval = setInterval(() => {
     setFormattedTime(format(new Date(), 'dd MMMM, HH:mm'));
     console.log("💀")
-  }, 60000); // 60000 milliseconds = 1 minute
+  }, 60000); 
   return () => clearInterval(interval);
 }, []);
 
@@ -113,7 +110,7 @@ const formattedDateTo = dateTo ? format(dateTo, 'MMMM dd') : null;
           <p className={css.dates}>Pick date(s)</p>
         ) : (
           <p className={css.dates}>
-            {formattedDateFrom}{formattedDateTo ? ` - ${formattedDateTo}` : ''}
+            {formattedDateFrom}{formattedDateTo ? ` - ${formattedDateTo} (${selectedDates.length} days)` : ''}
           </p>
         )}
       </div>
