@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef  } from "react";
-import { eachDayOfInterval, endOfMonth, format, startOfMonth, startOfWeek, startOfToday, parse, add, sub, addDays, addSeconds, isBefore } from "date-fns";
+import { eachDayOfInterval, endOfMonth, format, startOfMonth, startOfWeek, startOfToday, parse, add, sub, isBefore } from "date-fns";
 import css from "./Calendar.module.css"
 
 export const Calendar = () => {
+const [formattedTime, setFormattedTime] = useState(format(new Date(), 'dd MMMM, HH:mm'));
 const [dateFrom, setDateFrom] = useState(null);
 const [dateTo, setDateTo] = useState(null);
 const [selectedDates, setSelectedDates] = useState([]);
@@ -10,6 +11,8 @@ const [currentMonth, setCurrentMonth] = useState(format(startOfToday(), 'MMM yyy
 const defaultDateFormat = "yyyy-MM-dd"
 const today = new Date();
 const calendarRef = useRef(null);
+const currentTime = new Date();
+//const formattedTime = format(currentTime, 'dd MMMM, HH:mm');
 
 const firstDayCurrentMonth = parse(currentMonth, 'MMM yyyy', new Date()); 
 const firstDayNextMonth = add(firstDayCurrentMonth, { months: 1 });
@@ -24,8 +27,6 @@ function nextMonth() {
   const firstDayPrevMonth = sub(firstDayCurrentMonth, { months: 1 });
   setCurrentMonth(format(firstDayPrevMonth, 'MMM yyyy'))
   }
-
-
 
 function notCurrentMonth(date) {
   const currentMonth = format(startOfToday(), 'MMM yyyy');
@@ -45,6 +46,7 @@ const month = getDaysInMonth(new Date()).map(day => {
   const isSelected = selectedDates.some(selectedDay => format(selectedDay, defaultDateFormat) === format(day, defaultDateFormat));
 return { day, isSelected };
 })
+
 
 function handleDayClick(day) {
   if (!dateFrom || (dateTo && (format(dateTo, defaultDateFormat) !== format(day, defaultDateFormat)))) {
@@ -89,11 +91,22 @@ useEffect(() => {
   };
 }, [calendarRef]);
 
+
+useEffect(() => {
+  const interval = setInterval(() => {
+    setFormattedTime(format(new Date(), 'dd MMMM, HH:mm'));
+    console.log("💀")
+  }, 60000); // 60000 milliseconds = 1 minute
+  return () => clearInterval(interval);
+}, []);
+
+
 const formattedDateFrom = dateFrom ? format(dateFrom, 'MMMM dd') : null;
 const formattedDateTo = dateTo ? format(dateTo, 'MMMM dd') : null;
 
   return (
     <div>
+        <p className={css.clock}>Today is {formattedTime}</p>
       <div className={css.header}>
         <p className={css.title}>Select date</p>
         { selectedDates.length === 0 ? (
